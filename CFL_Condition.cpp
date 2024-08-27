@@ -1,0 +1,72 @@
+#include <iostream>
+#include <cmath>
+#include <vector>
+#include <algorithm>
+#include "matplotlibcpp.h"
+
+namespace plt = matplotlibcpp;
+
+int main(int argc, char* argv[])
+{
+    int nx = 85;    // Number of dots
+    double dx = 2.0/(nx - 1);   // Local spacing
+    int nt = 40;   // Number of timesteps
+    // double dt = 0.025;  // Time step size
+    int c = 1;  // Velocity
+    double sigma = 0.5;  // Courant number (the new dt will be calculated based on this)
+
+    double dt = sigma * dx;
+
+    std::vector<double> un(nx);
+
+    // Initialize the matrix with ones
+    std::vector<double> u(nx,0.0);
+    // for (int i=0; i<nx; i++){
+    //     std::cout<< u[i] << std::endl; 
+    // }
+
+    std::vector<double> x(nx);
+    for (int i = 0; i<nx; i++)
+    {
+        x[i] = i * dx;
+    }
+    
+    // for (int i=9; i<18; i++)
+    // {
+    //     u[i] = 1.0;
+    // }
+    for (int i = 0; i < nx; i++) {
+        x[i] = (5.0 * i) / (nx - 1);
+        u[i] = (x[i] >= 0.5 && x[i] <= 1) ? 1 : 0;
+    }
+    plt::plot(x,u);
+
+
+    for (int n=0; n<nt; n++){
+        // double un[nx];
+        for (int i = 0; i < nx; ++i){
+            un[i] = u[i];
+        }
+
+        //u[0] = un[0];
+
+        for (int i=0; i<nx; i++) {
+            u[i] = un[i] - c*dt/dx*(un[i]-un[i-1]);
+
+            // if (i == 25)
+            // {
+            //     std::cout << u[19] << std::endl;
+            // }            
+        }
+
+        plt::plot(x, u);
+        plt::xlabel("x");
+        plt::ylabel("u");
+        plt::xlim(-1.0,4.0);
+        plt::ylim(-0.1,2.1);
+        plt::pause(0.1);
+        plt::clf();
+    }
+
+    plt::show();  
+}
